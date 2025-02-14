@@ -80,9 +80,7 @@ bin/rspec
 4. Push branch (`git push origin feature-name`)
 5. Open a Pull Request
 
-## License
-This project is licensed under the MIT License.
 
 ## Contact
-For any questions or issues, contact [Your Name] at [Your Email].
+For any questions or issues, contact Wayne Kathanzu at kathanzuwayne2@gmail.com.
 
