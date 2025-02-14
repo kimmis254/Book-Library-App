@@ -1,0 +1,66 @@
+<h1><%= @book.title %></h1>
+<p><strong>Author:</strong> <%= @book.author %></p>
+<p><strong>Status:</strong> <%= @book.status.capitalize %></p>
+
+<h2>Borrowing History</h2>
+<table>
+  <tr>
+    <th>Borrower</th>
+    <th>Borrowed At</th>
+    <th>Returned At</th>
+  </tr>
+  <% @borrowings.each do |borrowing| %>
+    <tr>
+      <td><%= borrowing.borrower_name %></td>
+      <td><%= borrowing.borrowed_at.strftime("%d %b %Y, %H:%M") %></td>
+      <td><%= borrowing.returned_at ? borrowing.returned_at.strftime("%d %b %Y, %H:%M") : "Not returned" %></td>
+    </tr>
+  <% end %>
+</table>
+
+<h3>View Borrower History</h3>
+<%= form_with url: "#", method: :get, local: true, id: "borrower_history_form" do |form| %>
+  <div>
+    <%= form.label :borrower_name, "Enter Borrower's Name" %>
+    <%= form.text_field :borrower_name, required: true, id: "borrower_name_input" %>
+  </div>
+  <div>
+    <%= form.submit "View History", class: "button button-primary", onclick: "updateBorrowerHistoryURL(event)" %>
+  </div>
+<% end %>
+
+<script>
+    function updateBorrowerHistoryURL(event) {
+        event.preventDefault();
+        let borrowerName = document.getElementById("borrower_name_input").value.trim();
+        if (borrowerName) {
+            let form = document.getElementById("borrower_history_form");
+            form.action = "/borrowings/history/" + encodeURIComponent(borrowerName);
+            form.submit();
+        } else {
+            alert("Please enter a borrower's name.");
+        }
+    }
+</script>
+
+<% if @book.status.casecmp?("available") %>
+  <h3>Borrow Book</h3>
+  <%= form_with url: borrow_book_path(@book), method: :post, local: true do |form| %>
+    <div>
+      <%= form.label :borrower_name, "Enter Borrower's Name" %>
+      <%= form.text_field :borrower_name, required: true %>
+    </div>
+    <div>
+      <%= form.submit "Borrow Book", class: "button button-primary" %>
+    </div>
+  <% end %>
+<% else %>
+  <%= button_to "Return Book", return_book_path(@book), method: :post, data: { confirm: "Are you sure you want to return this book?" }, class: "button button-danger" %>
+<% end %>
+
+<h3>Manage Book</h3>
+<%= link_to "Edit Book", edit_book_path(@book), class: "button button-warning" %>
+<%= button_to "Delete Book", book_path(@book), method: :delete, data: { confirm: "Are you sure you want to delete this book?" }, class: "button button-danger" %>
+
+<br>
+<%= link_to "Back to Books", books_path, class: "button button-secondary" %>
